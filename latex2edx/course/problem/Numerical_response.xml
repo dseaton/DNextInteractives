@@ -1,0 +1,13 @@
+<problem display_name="Numerical response" linenum="22" tex_filename="example.tex" attempts="10">
+  <text>
+    <p>
+What is the numerical value of [mathjaxinline]\pi[/mathjaxinline]? </p>
+    <p>
+      <numericalresponse answer="3.14159">
+        <textline>
+          <responseparam type="tolerance" default="0.01"/>
+        </textline>
+      </numericalresponse>
+    </p>
+  </text>
+</problem>

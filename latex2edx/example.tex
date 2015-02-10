@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt]{article}
+
+\usepackage{edXpsl} % edX "problem specification language"
+
+\begin{document}
+
+% edXcourse: {course_number}{course display_name}[optional arguments like semester]
+\begin{edXcourse}{MIT.latex2edx}{latex2edx demo course}[semester="2014 Spring"]
+
+% edXchapter: {chapter display_name}[optional arguments like url_name]
+\begin{edXchapter}{Basic examples}
+
+% edXsection: {section display_name}[optional arguments like url_name]
+% this turns into a <sequential> in the XML
+\begin{edXsection}{Basic example problems}
+
+% edXvertical: {vertical display_name}[optional arguments like url_name]
+\begin{edXvertical}
+
+% edXproblem: {problem display_name}{attributes: url_name, weight, attempts}
+\begin{edXproblem}{Text Area}{attempts=10}
+
+What is the numerical value of $\pi$?
+
+% \edXabox: answer box, specifying question type and expected response
+\edXabox{expect="3.14159" type="custom" tolerance='0.01' rows='10' cols='10' inline='1' cfn=''}
+
+\end{edXproblem}
+\end{edXvertical}
+\end{edXsection}
+\end{edXchapter}
+\end{edXcourse}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

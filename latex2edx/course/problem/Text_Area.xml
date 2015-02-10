@@ -1,0 +1,11 @@
+<problem display_name="Text Area" linenum="22" tex_filename="example.tex" attempts="10">
+  <text>
+    <p>
+What is the numerical value of [mathjaxinline]\pi[/mathjaxinline]? </p>
+    <p>
+      <customresponse cfn="" inline="1" expect="3.14159">
+        <textbox rows="10" cols="10" correct_answer="3.14159" inline="1"/>
+      </customresponse>
+    </p>
+  </text>
+</problem>
