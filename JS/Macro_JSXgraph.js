@@ -36,3 +36,39 @@ createDemand = function(board,gname,color) {
                                            'label':{'offset':[105,-105]}
                                           });
 }
+
+
+/////////////////////////////////////////////////////////////
+// Dashed Lines
+createDashedLines2Axis = function(board,intersection,options) {
+    var fixed = options.fixed || true;  // defaults
+    var withLabel = options.withLabel || false;
+    var xlabel = options.xlabel || '';  
+    var ylabel = options.ylabel || '';
+    var color = options.color || 'gray';
+
+    var dashYp1 = board.create('point',[0, intersection.Y()],
+                                {withLabel:withLabel,name:ylabel,visible:true,size:'0.5',strokeColor:'Gray','label':{'offset':[-25,-2]}});
+
+    var dashYp2 = board.create('point',[intersection.X(), intersection.Y()],
+                                {withLabel:false,visible:false});
+    var dashY1 = board.create('segment',[dashYp1,dashYp2],
+                               {strokeColor:color,strokeWidth:'2',dash:'1',fixed:fixed});
+
+    var dashXp1 = board.create('point',[intersection.X(), 0],
+                                {withLabel:withLabel,name:xlabel,visible:true,size:'0.5',strokeColor:'Gray','label':{'offset':[-5,-8]}});
+
+    var dashXp2 = board.create('point',[intersection.X(), intersection.Y()],
+                                {withLabel:false,visible:false});
+
+    var dashX1 = board.create('segment',[dashXp1,dashXp2],
+                               {strokeColor:color,strokeWidth:'2',dash:'1',fixed:fixed});
+
+    return [dashXp1,dashXp2,dashYp1,dashYp2];
+}
+
+
+
+
+
+
