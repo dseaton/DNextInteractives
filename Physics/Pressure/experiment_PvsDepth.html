@@ -8,6 +8,14 @@
         margin: 10px;
     }
     
+    table {
+        border-collapse: collapse;
+    }
+
+    td {
+        padding: 5px;
+    }
+    
 
             </style>
         </head>
@@ -25,39 +33,68 @@
                     <table id="myActiveTable" border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
-      <th>Points</th>
-      <th>X</th>
-      <th>Y</th>
+      <th>mark cm</th>
+      <th>kPa</th>
+      <th>Pa</th>
+      <th>depth m</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td> a</td>
-      <td> <input id="0___X" class="Active" size="10px"></input></td>
-      <td> <input id="0___Y" class="Active" size="10px"></input></td>
+      <td>  7.1</td>
+      <td> 100.0</td>
+      <td> 100000</td>
+      <td> 0.000</td>
     </tr>
     <tr>
-      <td> b</td>
-      <td> <input id="1___X" class="Active" size="10px"></input></td>
-      <td> <input id="1___Y" class="Active" size="10px"></input></td>
+      <td> 10.0</td>
+      <td> 100.3</td>
+      <td> 100300</td>
+      <td> 0.029</td>
     </tr>
     <tr>
-      <td> c</td>
-      <td> <input id="2___X" class="Active" size="10px"></input></td>
-      <td> <input id="2___Y" class="Active" size="10px"></input></td>
+      <td> 15.0</td>
+      <td> 100.8</td>
+      <td> 100800</td>
+      <td> 0.079</td>
     </tr>
     <tr>
-      <td> d</td>
-      <td> <input id="3___X" class="Active" size="10px"></input></td>
-      <td> <input id="3___Y" class="Active" size="10px"></input></td>
+      <td> 20.0</td>
+      <td> 101.3</td>
+      <td> 101300</td>
+      <td> 0.129</td>
+    </tr>
+    <tr>
+      <td> 25.0</td>
+      <td> 101.8</td>
+      <td> 101800</td>
+      <td> 0.179</td>
+    </tr>
+    <tr>
+      <td> 30.0</td>
+      <td> 102.3</td>
+      <td> 102300</td>
+      <td> 0.229</td>
+    </tr>
+    <tr>
+      <td> 35.0</td>
+      <td> 102.8</td>
+      <td> 102800</td>
+      <td> 0.279</td>
+    </tr>
+    <tr>
+      <td> 36.8</td>
+      <td> 103.0</td>
+      <td> 103000</td>
+      <td> 0.297</td>
     </tr>
   </tbody>
 </table>
                 
                     <input class="btn" type="button" value="Plot Data" onClick="plotData()">
-                    <input class="btn" type="button" value="Best Fit" onClick="bestFitLine(points)">
-                    <input class="btn" type="button" value="Grab Table Data" onClick="getState()">
-                    <div id="spaceBelow">State:</div>
+                    <input class="btn" type="button" value="Best Fit" onClick="bestFitToggle(fitGraph)">
+                    <!-- <input class="btn" type="button" value="Grab Table Data" onClick="getState()">
+                    <div id="spaceBelow">State:</div> -->
                 </div>
                 <div id='jxgbox1' class='jxgbox' style='width:350px; height:300px; margin-left: 375px; border: solid #1f628d 2px;'></div>
         
@@ -104,32 +141,35 @@
         return data;
     }
 
-    bboxlimits = [-2, 12, 12, -2];
-    var board = JXG.JSXGraph.initBoard('jxgbox1', {boundingbox: bboxlimits, axis:true, showCopyright:false});
+    bboxlimits = [-2, 10, 10, -2];
+    var board = JXG.JSXGraph.initBoard('jxgbox1', {boundingbox: bboxlimits, 
+                                                   axis:true, showCopyright:false,showNavigation:false});
     state = {};
     points = [];
-
+    var fitGraph;
+    
     plotData = function() {
         points = [];
-    
+        fitGraph = undefined;
+        
         var rows = Array.prototype.slice.call(document.getElementById("myActiveTable").getElementsByTagName("tr"));
         rows.shift();
         for(r in rows) {
             //Read somewhere that innerText does not generalize to Firefox - likely can simplify below
             var datum = {
-                'name':rows[r].cells[0].id,
-                'x':rows[r].cells[1].children[0].value, 
-                'y':rows[r].cells[2].children[0].value
-//                 'name':rows[r].cells[0].id,
-//                 'x':Number(rows[r].cells[1].innerText || rows[r].cells[1].innerHTML), 
-//                 'y':Number(rows[r].cells[2].innerText || rows[r].cells[2].innerHTML)
-            
+//                'name':rows[r].cells[0].id,
+//                'x':rows[r].cells[1].children[0].value, 
+//                'y':rows[r].cells[2].children[0].value
+                 'name':rows[r].cells[0].id,
+                 'x':Number(rows[r].cells[3].innerText || rows[r].cells[3].innerHTML), 
+                 'y':Number(rows[r].cells[1].innerText || rows[r].cells[1].innerHTML)
             };
 
             var p = board.create('point',[datum['x'],datum['y']],{name:datum['name'],fixed:true});
             points.push(p);
         }
-
+        
+        //Curve Fit
         var ydata = [];
         var xdata = [];
         for (i=0;i<points.length;i++) {
@@ -137,32 +177,44 @@
             xdata.push(points[i].X());
         }
 
-        yMin,yMax,xMax,xMin = -0.15*Math.min(ydata),0.25*Math.max(ydata),0.25*Math.max(xdata),-0.15*Math.max(xdata);
-        bboxlimits = [yMin,yMax,xMax,xMin]; // -y,y,x,-x
-        var board = JXG.JSXGraph.initBoard('jxgbox1', {boundingbox: bboxlimits, axis:true, showCopyright:false});
-    }
-    
-    var bestFitLine = function(points) {
-        if (points.length < 0) {
+        if (points.length > 0) {
+            var fit = linearRegression(ydata,xdata);
+            console.log(fit['slope']);
+        }
+        else {
             return alert("No data entered in table.");
         }
+
+        //Board Properties after plotting data
+        //board.zoomAllPoints();
+        //board.setBoundingBox([-0.1, 110, 0.3, 95], false);
+        var xMin = -0.05; //JXG.Math.Statistics.min(ydata); 
+        var yMax = 105;
+        var xMax = 0.35;
+        var yMin = 98; //JXG.Math.Statistics.min(xdata); 
+        bboxlimits = [xMin,yMax,xMax,yMin]; // -x,y,x,-y
+        board.setBoundingBox(bboxlimits, false);
+        createXAxisRef(board);
         
-        var ydata = [];
-        var xdata = [];
-        for (i=0;i<points.length;i++) {
-            ydata.push(points[i].Y());
-            xdata.push(points[i].X());
-        }
-        
-        console.log(ydata);
-        
-        var fit = linearRegression(ydata,xdata);
-        
-        var graph = board.create('functiongraph',
-                       [function(x){ return fit['slope']*x + fit['intercept'];}, -1, 9],
-                       {name:'Best Fit','strokeWidth':'2'}
+        fitText = 'y = '+fit['slope'].toFixed(2)+'x + '+fit['intercept'].toFixed(2);
+        fitGraph = board.create('functiongraph',
+                       [function(x){ return fit['slope']*x + fit['intercept'];}, xMin, xMax],
+                       {name:fitText,'strokeWidth':'1.5',
+                        withLabel:true,label:{offset:[0,-20]},
+                        visible:false}
                     );
-        
+     
+        board.zoomElements();
+     
+    }
+    
+    var bestFitToggle = function(fitGraph) {
+        if (fitGraph.getAttribute('visible') == false) {
+            fitGraph.setAttribute({visible:true});
+        }
+        else if (fitGraph.getAttribute('visible') == true) {
+            fitGraph.setAttribute({visible:false});
+        }
     }
 
 
@@ -188,7 +240,27 @@
         lr['intercept'] = (sum_y - lr.slope * sum_x)/n;
         lr['r2'] = Math.pow((n*sum_xy - sum_x*sum_y)/Math.sqrt((n*sum_xx-sum_x*sum_x)*(n*sum_yy-sum_y*sum_y)),2);
 
+        console.log(lr);
         return lr;
+    }
+
+    createXAxisRef = function(brd) {
+        var pX0 = brd.create('point', 
+            [0, function(){
+                    var bb = brd.getBoundingBox(); 
+                    return bb[3]+(bb[1]-bb[3])*0.12; // 12% above the bottom border
+                }
+            ], {visible:false, withLabel:false}); 
+        var pX1 = brd.create('point', 
+            [1, function(){
+                    var bb = brd.getBoundingBox(); 
+                    return bb[3]+(bb[1]-bb[3])*0.12;
+                }
+            ], {visible:false, withLabel:false}); 
+
+        var xaxis = brd.create('axis', [pX0, pX1]);
+        pX0.type = JXG.OBJECT_TYPE_CAS;   
+        pX1.type = JXG.OBJECT_TYPE_CAS; 
     }
 
 
