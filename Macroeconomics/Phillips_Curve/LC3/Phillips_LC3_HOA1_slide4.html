@@ -114,24 +114,45 @@
             var xlabel1 = brd1.create('text',[-1.2,10,"PL"],{fixed:true});
             var ylabel1 = brd1.create('text',[9,-0.5,"RGDP"],{fixed:true});
             
-            //Supply Line 1 - fixed
-            var Supply = createSupply(brd1,'SRAS','DodgerBlue');
-            Supply.setAttribute({'name':'SRAS','fixed':true,'highlight':false});
+            
+            
+            
+            //SRAS Line 1 - fixed
+            var SRAS1 = createSupply(brd1,'SRAS1','DodgerBlue');
+            SRAS1.setAttribute({'name':'SRAS1','fixed':true,'highlight':false});
+            
+            //SRAS Line 2 - draggable
+            var SRAS2 = createSupply(brd1,'SRAS2','Lime');
+            SRAS2.setAttribute({'name':'SRAS2','fixed':false,'highlight':false});
             
             //Demand Line 1 - fixed
-            var AD1 = createDemand(brd1,'AD1','Orange');
+            var AD1 = createDemand(brd1,'AD1','DodgerBlue');
             AD1.setAttribute({'dash':1,'fixed':true,'highlight':false});
             
             //Demand Line 2 - moveable
             var AD2 = createDemand(brd1,'AD2','Orange');
             AD2.setAttribute({withLabel:false});
+                        
+              
             
-             
             ////////////
             // Intersection Box 1
             ////////////
-            var iSDfix = brd1.create('intersection', [AD1, Supply, 0], {visible:false}); 
-            var iS2D = brd1.create('intersection', [AD2, Supply, 0], {visible:false});
+            var iSDfix = brd1.create('intersection', [AD1, SRAS1, 0], {visible:false}); 
+            var iS2D = brd1.create('intersection', [AD2, SRAS1, 0], {visible:false});
+            
+            ////////////
+            //LRAS - straight line
+            ////////////
+            var LRAS = brd1.create('segment',[[iSDfix.X(),11.0],[iSDfix.X(),0.0]],
+                                   {'strokeColor':'DodgerBlue','strokeWidth':'2',
+                                    'name':'LRAS','withLabel':true,
+                                    'fixed':true,
+                                    'label':{'offset':[-15,140]}});  
+            
+            //LRAS Intersection
+            var iLSD = brd1.create('intersection', [LRAS, SRAS2, 0], {visible:false});
+            
             
             ////////////
             // Draggable Dashed Lines for Board 1
@@ -149,6 +170,21 @@
             
             
             ////////////
+            // 2nd SRAS2 Draggable Dashed Lines for Board 1
+            ////////////
+            var dashesDrag2ndB1 = createDashedLines2Axis(brd1,iLSD,
+                                                      {fixed:false,
+                                                       withLabel:false,
+                                                       xlabel:'',
+                                                       ylabel:'PL3',
+                                                       color:'Lime'});
+            var dashLSXp1 = dashesDrag2ndB1[0];
+            var dashLSXp2 = dashesDrag2ndB1[1];
+            var dashLSYp1 = dashesDrag2ndB1[2];
+            var dashLSYp2 = dashesDrag2ndB1[3];
+            
+            
+            ////////////
             // Fixed Dashed Lines for Board 1
             ////////////
             var dashesFixedB1 = createDashedLines2Axis(brd1,iSDfix,
@@ -157,14 +193,9 @@
                                                        ylabel:'PL1',
                                                        color:'DodgerBlue'});
             
-            ////////////
-            //LRAS - straight line
-            ////////////
-            var LRAS = brd1.create('segment',[[iSDfix.X(),11.0],[iSDfix.X(),0.0]],
-                                   {'strokeColor':'DodgerBlue','strokeWidth':'2',
-                                    'name':'LRAS','withLabel':true,
-                                    'label':{'offset':[-15,140]}});
             
+            
+        
             
             ////////////
             // BOARD 2
@@ -189,18 +220,36 @@
             var ylabel2 = brd2.create('text',[-1.8,10,"Inflation<br>Rate"],{fixed:true});
             var xlabel2 = brd2.create('text',[9,-0.5,"UR"],{fixed:true});
         
+            
+            
+        
+        
             //////////
             // Connect Boards and Movement
             //////////
             brd1.addChild(brd2);
         
-            //SRPC - fixed
-            var SRPC = createDemand(brd2,'SRPC','DodgerBlue');
-            SRPC.setAttribute({'fixed':true,'highlight':false});
+            //SRPC2 - draggable
+            var SRPC2 = createDemand(brd2,'SRPC2','Lime');
+            SRPC2.setAttribute({'fixed':true,'highlight':false});
+
+        
+            //SRPC1 - fixed
+            var SRPC1 = createDemand(brd2,'SRPC1','DodgerBlue');
+            SRPC1.setAttribute({'fixed':true,'highlight':false});
+        
+            ////////////
+            //LRPC - straight line
+            ////////////
+            var LRPC = brd2.create('segment',[[iSDfix.X(),11.0],[iSDfix.X(),0.0]],
+                                   {'strokeColor':'DodgerBlue','strokeWidth':'2',
+                                    'dash':3,fixed:true,
+                                    'name':'LRPC','withLabel':true,
+                                    'label':{'offset':[-15,140]}});  
         
             ////////
-            // Invisible axis line - allows us to move points up and down the SRPC curve
-            // See the next intersection. DB2Y intersects with SRPC
+            // Invisible axis line - allows us to move points up and down the SRPC1 curve
+            // See the next intersection. DB2Y intersects with SRPC1
             ////////
             var DB2YP1 = brd2.create('point',[0, iS2D.Y()],{withLabel:false,visible:false});
             var DB2YP2 = brd2.create('point',[iS2D.X(), iS2D.Y()],{withLabel:false,visible:false});
@@ -208,12 +257,12 @@
                                                                         dash:'1',fixed:true} );
                         
             ////////
-            //Intersection for SRPC
+            //Intersection for SRPC1
             ////////
-            var iB2SRPC = brd2.create('intersection', [DB2Y, SRPC, 0], {name:'A2',fillColor:'Orange',
+            var iB2SRPC1 = brd2.create('intersection', [DB2Y, SRPC1, 0], {name:'A2',fillColor:'Orange',
                                                                         strokeColor:'Orange',
                                                                         withLabel:true,visible:false});
-            var iB2fixed = brd2.create('point', [iB2SRPC.X(), iB2SRPC.Y()], {name:'A1',visible:true,
+            var iB2fixed = brd2.create('point', [iB2SRPC1.X(), iB2SRPC1.Y()], {name:'A1',visible:true,
                                                                              fixed:true,fillColor:'DodgerBlue',
                                                                              strokeColor:'DogderBlue'});
 
@@ -230,7 +279,7 @@
             ////////////
             // Fixed Dashed Lines for Point A1
             ////////////
-            var dashesDragB2 = createDashedLines2Axis(brd2,iB2SRPC,
+            var dashesDragB2 = createDashedLines2Axis(brd2,iB2SRPC1,
                                                       {fixed:false,
                                                        withLabel:false,
                                                        xlabel:'3%',
@@ -246,34 +295,50 @@
             // Interactivity
             //////////////////
             brd1.on('move', function() {      
-                //Moving Dashed Lines in Board 1
+                //Moving 1st set of Dashed Lines in Board 1
                 dashS2Yp1.moveTo([0, iS2D.Y()]);
                 dashS2Yp2.moveTo([iS2D.X(), iS2D.Y()]);
 
                 dashS2Xp1.moveTo([iS2D.X(), 0]);
                 dashS2Xp2.moveTo([iS2D.X(), iS2D.Y()]);
                     
+                //Moving 2nd set of Dashed Lines in Board 1
+                dashLSYp1.moveTo([0, iLSD.Y()]);
+                dashLSYp2.moveTo([iLSD.X(), iLSD.Y()]);
+
+                dashLSXp1.moveTo([iLSD.X(), 0]);
+                dashLSXp2.moveTo([iLSD.X(), iLSD.Y()]);    
+                    
                 //Moving Point A2
                 DB2YP1.moveTo([0, iS2D.Y()]);
-                DB2YP2.moveTo([iB2SRPC.X(),iS2D.Y()]);    
+                DB2YP2.moveTo([iB2SRPC1.X(),iS2D.Y()]);    
                     
                 //Moving Dashed Lines in Board 2
-                dashB2Yp1.moveTo([0, iB2SRPC.Y()]);
-                dashB2Yp2.moveTo([iB2SRPC.X(), iB2SRPC.Y()]);
+                dashB2Yp1.moveTo([0, iB2SRPC1.Y()]);
+                dashB2Yp2.moveTo([iB2SRPC1.X(), iB2SRPC1.Y()]);
 
-                dashB2Xp1.moveTo([iB2SRPC.X(), 0]);
-                dashB2Xp2.moveTo([iB2SRPC.X(), iB2SRPC.Y()]);
+                dashB2Xp1.moveTo([iB2SRPC1.X(), 0]);
+                dashB2Xp2.moveTo([iB2SRPC1.X(), iB2SRPC1.Y()]);
+                    
+                //Moving SRPC2 on Board 2
+                //var diffX = (SRAS2.point1.X() - SRAS1.point1.X());
+                //console.log(SRAS2.point1.X() - diffX);
+                SRPC2.point1.moveTo([SRAS2.point1.X(),SRAS2.point2.Y()]);
+                SRPC2.point2.moveTo([SRAS2.point2.X(),SRAS2.point1.Y()]);
             });
+            
             
             brd1.on('mousedown', function() {      
                 AD2.setAttribute({withLabel:true});
                 dashS2Yp1.setAttribute({withLabel:true});
                 dashS2Xp1.setAttribute({withLabel:true});
+                
+                dashLSYp1.setAttribute({withLabel:true});
                 brd1.update()
                     
                 dashB2Yp1.setAttribute({withLabel:true});
                 dashB2Xp1.setAttribute({withLabel:true});
-                iB2SRPC.setAttribute({visible:true});
+                iB2SRPC1.setAttribute({visible:true});
                 brd2.update()
             });
             
@@ -288,7 +353,7 @@
                 AD2.setAttribute({withLabel:false});
                 dashS2Yp1.setAttribute({withLabel:false});
                 dashS2Xp1.setAttribute({withLabel:false});
-                iB2SRPC.setAttribute({withLabel:false});
+                iB2SRPC1.setAttribute({withLabel:false});
                 
                 brd1.update();
 

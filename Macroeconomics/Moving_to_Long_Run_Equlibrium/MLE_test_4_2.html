@@ -14,7 +14,6 @@
         
         <div style="width: 100%; overflow: hidden;">
             <div id='jxgbox1' class='jxgbox' style='width:350px; height:300px; float:left; border: solid #1f628d 2px;'></div>        
-            <div id='jxgbox2' class='jxgbox' style='width:350px; height:300px; margin-left: 375px; border: solid #1f628d 2px;'></div>
         </div>
 
         <!-- TURNED OFF
@@ -153,93 +152,19 @@
             ////////////
             var dashesFixedB1 = createDashedLines2Axis(brd1,iSDfix,
                                                       {withLabel:true,
-                                                       xlabel:'Y1',
+                                                       xlabel:'rY1',
                                                        ylabel:'PL1',
                                                        color:'DodgerBlue'});
             
             ////////////
             //LRAS - straight line
             ////////////
-            var LRAS = brd1.create('segment',[[iSDfix.X(),11.0],[iSDfix.X(),0.0]],
+            var LRAS = brd1.create('segment',[[7.0,11.0],[7.0,0.0]],
                                    {'strokeColor':'DodgerBlue','strokeWidth':'2',
                                     'name':'LRAS','withLabel':true,
                                     'label':{'offset':[-15,140]}});
+            var labelLRAS = brd1.create('text',[6.7,-0.4,"rYF"],{fixed:true});
             
-            
-            ////////////
-            // BOARD 2
-            ////////////
-            bboxlimits2 = [-2.0, 12, 12, -1];
-            var brd2 = JXG.JSXGraph.initBoard('jxgbox2', {axis:false, 
-                                                    showCopyright: false,
-                                                    showNavigation: false,
-                                                    zoom: false,
-                                                    pan: false,
-                                                    boundingbox:bboxlimits2,
-                                                    grid: false,
-                                                    hasMouseUp: true, 
-            });
-            
-            xaxis2 = brd2.create('axis', [[0, 0], [11, 0]], {withLabel: false});
-            yaxis2 = brd2.create('axis', [[0, 0], [0, 11]], {withLabel: false});
-            
-            //Axes
-            xaxis2.removeAllTicks();
-            yaxis2.removeAllTicks();
-            var ylabel2 = brd2.create('text',[-1.8,10,"Inflation<br>Rate"],{fixed:true});
-            var xlabel2 = brd2.create('text',[9,-0.5,"UR"],{fixed:true});
-        
-            //////////
-            // Connect Boards and Movement
-            //////////
-            brd1.addChild(brd2);
-        
-            //SRPC - fixed
-            var SRPC = createDemand(brd2,'SRPC','DodgerBlue');
-            SRPC.setAttribute({'fixed':true,'highlight':false});
-        
-            ////////
-            // Invisible axis line - allows us to move points up and down the SRPC curve
-            // See the next intersection. DB2Y intersects with SRPC
-            ////////
-            var DB2YP1 = brd2.create('point',[0, iS2D.Y()],{withLabel:false,visible:false});
-            var DB2YP2 = brd2.create('point',[iS2D.X(), iS2D.Y()],{withLabel:false,visible:false});
-            var DB2Y = brd2.create('segment',[DB2YP1,DB2YP2],{visible:false,strokeColor:'gray',strokeWidth:'2',
-                                                                        dash:'1',fixed:true} );
-                        
-            ////////
-            //Intersection for SRPC
-            ////////
-            var iB2SRPC = brd2.create('intersection', [DB2Y, SRPC, 0], {name:'A2',fillColor:'Orange',
-                                                                        strokeColor:'Orange',
-                                                                        withLabel:true,visible:false});
-            var iB2fixed = brd2.create('point', [iB2SRPC.X(), iB2SRPC.Y()], {name:'A1',visible:true,
-                                                                             fixed:true,fillColor:'DodgerBlue',
-                                                                             strokeColor:'DogderBlue'});
-
-        
-            ////////////
-            // Fixed Dashed Lines for Point A1
-            ////////////
-            var dashesFixedB2 = createDashedLines2Axis(brd2,iB2fixed,
-                                                      {withLabel:true,
-                                                       xlabel:'5%',
-                                                       ylabel:'2%',
-                                                       color:'DodgerBlue'});
-            
-            ////////////
-            // Fixed Dashed Lines for Point A1
-            ////////////
-            var dashesDragB2 = createDashedLines2Axis(brd2,iB2SRPC,
-                                                      {fixed:false,
-                                                       withLabel:false,
-                                                       xlabel:'3%',
-                                                       ylabel:'4%',
-                                                       color:'Orange'});
-            var dashB2Xp1 = dashesDragB2[0];
-            var dashB2Xp2 = dashesDragB2[1];
-            var dashB2Yp1 = dashesDragB2[2];
-            var dashB2Yp2 = dashesDragB2[3];
             
         
             //////////////////
@@ -252,17 +177,7 @@
 
                 dashS2Xp1.moveTo([iS2D.X(), 0]);
                 dashS2Xp2.moveTo([iS2D.X(), iS2D.Y()]);
-                    
-                //Moving Point A2
-                DB2YP1.moveTo([0, iS2D.Y()]);
-                DB2YP2.moveTo([iB2SRPC.X(),iS2D.Y()]);    
-                    
-                //Moving Dashed Lines in Board 2
-                dashB2Yp1.moveTo([0, iB2SRPC.Y()]);
-                dashB2Yp2.moveTo([iB2SRPC.X(), iB2SRPC.Y()]);
-
-                dashB2Xp1.moveTo([iB2SRPC.X(), 0]);
-                dashB2Xp2.moveTo([iB2SRPC.X(), iB2SRPC.Y()]);
+        
             });
             
             brd1.on('mousedown', function() {      
@@ -270,69 +185,9 @@
                 dashS2Yp1.setAttribute({withLabel:true});
                 dashS2Xp1.setAttribute({withLabel:true});
                 brd1.update()
-                    
-                dashB2Yp1.setAttribute({withLabel:true});
-                dashB2Xp1.setAttribute({withLabel:true});
-                iB2SRPC.setAttribute({visible:true});
-                brd2.update()
             });
             
-            resetAnimation = function() {
-                //Initial line coords
-                var c1 = [1.0,10.0];
-                var c2 = [9.0,2.0];
-                
-                //Animated Curve
-                AD2.point1.moveTo(c1,10);
-                AD2.point2.moveTo(c2,10);
-                AD2.setAttribute({withLabel:false});
-                dashS2Yp1.setAttribute({withLabel:false});
-                dashS2Xp1.setAttribute({withLabel:false});
-                iB2SRPC.setAttribute({withLabel:false});
-                
-                brd1.update();
-
-                //Dashed Lines                
-                dashS2Yp1.moveTo([0, iS2D.Y()-1]);
-                dashS2Yp2.moveTo([iS2D.X()-1, iS2D.Y()-1]);
-
-                dashS2Xp1.moveTo([iS2D.X()-1, 0]);
-                dashS2Xp2.moveTo([iS2D.X()-1, iS2D.Y()-1]);
-                
-                brd1.update();
-            };
             
-            
-            //Standard edX JSinput functions
-            getInput = function(){
-                state = {};
-                statestr = JSON.stringify(state);
-                console.log(statestr)
-                
-                //IPython Notebook Considerations
-                document.getElementById('spaceBelow').innerHTML += '<br>'+statestr;
-                var command = "state = '" + statestr + "'";
-                console.log(command);
-
-                //Kernel
-                var kernel = IPython.notebook.kernel;
-                kernel.execute(command);
-
-                return statestr;
-            }
-
-            getState = function(){
-                state = {'input': JSON.parse(getInput())};
-                statestr = JSON.stringify(state);
-                return statestr
-            }
-
-            setState = function(statestr){
-                $('#msg').html('setstate ' + statestr);
-                state = JSON.parse(statestr);
-                console.log(statestr);
-                console.debug('State updated successfully from saved.');
-            }
             
             
         </script>
